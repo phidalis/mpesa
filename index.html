@@ -53,7 +53,7 @@
     font-size: clamp(1.15rem, 5.6vw, 1.6rem);
     font-weight: 500;
     letter-spacing: 0.5px;
-    color: #f5f5f5;
+    color: #ffffff;
     flex: 0 0 auto;
   }
 
@@ -90,12 +90,18 @@
     flex: 0 0 auto;
   }
 
-  /* ---------- 10-DIGIT NUMBER ---------- */
+  /* ---------- 10-DIGIT NUMBER (masked) ---------- */
   .phone {
     font-size: clamp(0.75rem, 3.9vw, 0.9rem);
     letter-spacing: 1.6px;
-    color: #9a9a9a;
+    color: #ffffff;
     font-variant-numeric: tabular-nums;
+  }
+
+  .phone .mask {
+    color: #ffffff;
+    opacity: 0.75;
+    letter-spacing: 1.2px;
   }
 
   /* ---------- NUMBER + GEAR (line 1) + BADGE (line 2) ---------- */
@@ -146,17 +152,18 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: clamp(0.62rem, 3vw, 0.72rem);
-    line-height: 1;
+    font-size: clamp(0.8rem, 4vw, 0.95rem);
+    line-height: 1.3;
     letter-spacing: 0.2px;
-    color: #14532d;
-    background: #dcfce7;
-    border-radius: 999px;
-    padding: clamp(5px, 1.2vh, 7px) clamp(10px, 3vw, 14px);
+    color: #ffffff;
+    background: #12211a;                /* near-black, faint green tint */
+    border-radius: 5px;                 /* near-rectangle */
+    padding: clamp(6px, 1.5vh, 9px) clamp(11px, 3.4vw, 16px);
   }
 
   /* ---------- NOTICE (single line, red) ---------- */
   .notice {
+    display: none;                     /* hidden = takes no space at all */
     white-space: nowrap;
     max-width: 100%;
     overflow: hidden;
@@ -166,16 +173,16 @@
     letter-spacing: 0.2px;
     color: #ff5c5c;
     flex: 0 0 auto;
-    visibility: hidden;
-    opacity: 0;
-    transform: translateY(-3px);
-    transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
   .notice.show {
-    visibility: visible;
-    opacity: 1;
-    transform: translateY(0);
+    display: block;
+    animation: noticeIn 0.2s ease;
+  }
+
+  @keyframes noticeIn {
+    from { opacity: 0; transform: translateY(-3px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .pin-boxes.shake {
@@ -274,7 +281,7 @@
   .key {
     background: transparent;
     border: none;
-    color: #f0f0f0;
+    color: #ffffff;
     font-size: clamp(1.6rem, 8vw, 2.2rem);
     font-weight: 400;
     font-family: inherit;
@@ -291,8 +298,8 @@
   }
 
   .key:active {
-    color: #f0f0f0;             /* no colour change on press */
-    transform: none;            /* no animation on press */
+    color: #ffffff;             /* no colour change on press */
+    transform: none;/* no animation on press */
   }
 
   /* X (backspace) — subtle, still plain but slightly tinted */
@@ -329,10 +336,10 @@
     <!-- Name -->
     <div class="name">John Doe</div>
 
-    <!-- 10-digit number + settings icon + light green badge -->
+<!-- 10-digit number + settings icon + data notice box -->
     <div class="meta-row">
       <div class="num-group">
-        <div class="phone">0712 345 678</div>
+        <div class="phone">071 <span class="mask">***</span> 78</div>
 
         <button class="gear" id="gear" type="button" aria-label="Settings">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
