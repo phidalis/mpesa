@@ -27,6 +27,7 @@
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     display: flex;
     justify-content: center;
+    align-items: stretch;
     padding: clamp(10px, 3.5vw, 20px);
     padding-top: max(clamp(10px, 3.5vw, 20px), env(safe-area-inset-top));
     padding-bottom: max(clamp(10px, 3.5vw, 20px), env(safe-area-inset-bottom));
@@ -34,22 +35,22 @@
     overflow-y: auto;
   }
 
-  /* ---------- CARD ---------- */
+  /* ---------- CARD: stretches top-to-bottom of the screen ---------- */
   .card {
     width: 100%;
     max-width: 380px;
-    margin: auto;                    /* keeps it centred, still scrollable if it must shrink */
-    max-height: 100%;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: clamp(5px, 1.6vh, 13px);
+    gap: clamp(8px, 2vh, 16px);
+    padding-block: clamp(4px, 1.5vh, 12px);
   }
 
-  /* ---------- TITLE ---------- */
+  /* ---------- TITLE (near the top) ---------- */
   .title {
-    font-size: clamp(1rem, 4.6vw, 1.4rem);
+    font-size: clamp(1.15rem, 5.6vw, 1.6rem);
     font-weight: 500;
     letter-spacing: 0.5px;
     color: #f5f5f5;
@@ -58,8 +59,8 @@
 
   /* ---------- AVATAR (#8E4585 background) ---------- */
   .avatar {
-    width: clamp(52px, 17vw, 74px);
-    height: clamp(52px, 17vw, 74px);
+    width: clamp(64px, 22vw, 96px);
+    height: clamp(64px, 22vw, 96px);
     flex: 0 0 auto;
     border-radius: 50%;
     background: #8E4585;                                        /* solid plum purple */
@@ -67,7 +68,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(1.1rem, 5vw, 1.6rem);
+    font-size: clamp(1.3rem, 6vw, 2rem);
     font-weight: 600;
     color: #ffffff;
     box-shadow: 0 8px 24px rgba(142, 69, 133, 0.45);            /* matching glow */
@@ -82,7 +83,7 @@
 
   /* ---------- NAME ---------- */
   .name {
-    font-size: clamp(0.9rem, 4.2vw, 1.15rem);
+    font-size: clamp(1rem, 5vw, 1.3rem);
     font-weight: 600;
     letter-spacing: 0.4px;
     color: #ffffff;
@@ -91,8 +92,8 @@
 
   /* ---------- 10-DIGIT NUMBER ---------- */
   .phone {
-    font-size: clamp(0.68rem, 3.4vw, 0.78rem);
-    letter-spacing: 1.4px;
+    font-size: clamp(0.75rem, 3.9vw, 0.9rem);
+    letter-spacing: 1.6px;
     color: #9a9a9a;
     font-variant-numeric: tabular-nums;
   }
@@ -103,7 +104,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: clamp(4px, 1.2vh, 8px);
+    gap: clamp(5px, 1.4vh, 10px);
     width: 100%;
     flex: 0 0 auto;
   }
@@ -145,13 +146,13 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: clamp(0.55rem, 2.7vw, 0.62rem);
+    font-size: clamp(0.62rem, 3vw, 0.72rem);
     line-height: 1;
     letter-spacing: 0.2px;
     color: #14532d;
     background: #dcfce7;
     border-radius: 999px;
-    padding: 5px 10px;
+    padding: clamp(5px, 1.2vh, 7px) clamp(10px, 3vw, 14px);
   }
 
   /* ---------- NOTICE (single line, red) ---------- */
@@ -160,7 +161,7 @@
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: clamp(0.62rem, 3.1vw, 0.72rem);
+    font-size: clamp(0.7rem, 3.5vw, 0.8rem);
     line-height: 1.2;
     letter-spacing: 0.2px;
     color: #ff5c5c;
@@ -192,16 +193,16 @@
   /* ---------- PIN BOXES ---------- */
   .pin-boxes {
     display: flex;
-    gap: clamp(7px, 2.6vw, 10px);
-    margin: clamp(4px, 1.4vh, 10px) 0 clamp(2px, 1vh, 6px);
+    gap: clamp(9px, 3vw, 14px);
+    margin: clamp(6px, 2vh, 16px) 0 clamp(2px, 1vh, 8px);
     justify-content: center;
     flex: 0 0 auto;
   }
 
   .pin-box {
-    width: clamp(32px, 9.5vw, 42px);
-    height: clamp(32px, 9.5vw, 42px);
-    border-radius: clamp(8px, 2.4vw, 10px);
+    width: clamp(38px, 11.5vw, 50px);
+    height: clamp(38px, 11.5vw, 50px);
+    border-radius: clamp(9px, 2.8vw, 12px);
     background: #141414;
     border: 1.5px solid #2a2a2a;
     display: flex;
@@ -213,8 +214,8 @@
   /* green dot, hidden by default */
   .pin-box::after {
     content: "";
-    width: clamp(11px, 3.4vw, 14px);
-    height: clamp(11px, 3.4vw, 14px);
+    width: clamp(13px, 4vw, 17px);
+    height: clamp(13px, 4vw, 17px);
     border-radius: 50%;
     background: #22c55e;
     opacity: 0;
@@ -233,16 +234,17 @@
     transform: scale(1);
   }
 
-  /* ---------- KEYPAD (fills remaining height, never overflows) ---------- */
+  /* ---------- KEYPAD: pushed to the bottom of the screen ---------- */
   .keypad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(4, minmax(34px, 1fr));
-    gap: clamp(2px, 1vh, 8px) 10px;
+    grid-template-rows: repeat(4, minmax(46px, 1fr));
+    gap: clamp(4px, 1.4vh, 12px) 12px;
     width: 100%;
-    max-width: 300px;
+    max-width: 320px;
     flex: 1 1 auto;
     min-height: 0;
+    margin-top: auto;
   }
 
   /* PLAIN numbers — no box, no border, no background */
@@ -250,7 +252,7 @@
     background: transparent;
     border: none;
     color: #f0f0f0;
-    font-size: clamp(1.35rem, 6.5vw, 1.8rem);
+    font-size: clamp(1.6rem, 8vw, 2.2rem);
     font-weight: 400;
     font-family: inherit;
     cursor: pointer;
@@ -258,7 +260,7 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    min-height: 34px;
+    min-height: 46px;
     padding: 0;
     user-select: none;
     touch-action: manipulation;
@@ -273,7 +275,7 @@
   /* X (backspace) — subtle, still plain but slightly tinted */
   .key.backspace {
     color: #ff7a7a;
-    font-size: clamp(1.1rem, 5vw, 1.4rem);
+    font-size: clamp(1.3rem, 6.4vw, 1.8rem);
     font-weight: 500;
   }
 
@@ -285,9 +287,10 @@
   /* ---------- SHORT SCREENS (SE / landscape) ---------- */
   @media (max-height: 640px) {
     body { padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: max(8px, env(safe-area-inset-bottom)); }
-    .card { gap: clamp(3px, 1vh, 7px); }
-    .pin-boxes { margin: clamp(2px, 1vh, 6px) 0 0; }
-    .keypad { grid-template-rows: repeat(4, minmax(30px, 1fr)); }
+    .card { gap: clamp(4px, 1.2vh, 9px); }
+    .pin-boxes { margin: clamp(2px, 1vh, 8px) 0 0; }
+    .keypad { grid-template-rows: repeat(4, minmax(38px, 1fr)); }
+    .key { min-height: 38px; }
   }
 </style>
 </head>
