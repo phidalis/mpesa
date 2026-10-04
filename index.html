@@ -57,14 +57,14 @@
     flex: 0 0 auto;
   }
 
-  /* ---------- AVATAR (#8E4585 background) ---------- */
+  /* ---------- AVATAR (burgundy background) ---------- */
   .avatar {
     width: clamp(64px, 22vw, 96px);
     height: clamp(64px, 22vw, 96px);
     flex: 0 0 auto;
     border-radius: 50%;
     background: #800020;                                        /* burgundy */
-    border: 2px solid #800020;                                  /* burgundy, same as background */
+    border: 2px solid #800020;                                  /* border same as background */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -203,8 +203,8 @@
     width: clamp(44px, 14vw, 60px);
     height: clamp(44px, 14vw, 60px);
     border-radius: clamp(11px, 3.4vw, 15px);
-    background: #141414;
-    border: 2px solid #2a2a2a;
+    background: #0a0a0a;                /* same as page background */
+    border: 2px solid #ffffff;                /* white box margins */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -272,15 +272,15 @@
     transform: none;/* no animation on press */
   }
 
-  /* X (backspace) — subtle, still plain but slightly tinted */
+  /* X (backspace) — green */
   .key.backspace {
-    color: #ff7a7a;
+    color: #22c55e;
     font-size: clamp(1.3rem, 6.4vw, 1.8rem);
     font-weight: 500;
   }
 
   .key.backspace:active {
-    color: #ff7a7a;             /* no colour change on press */
+    color: #22c55e;             /* no colour change on press */
     transform: none;            /* no animation on press */
   }
 
@@ -300,7 +300,7 @@
     <!-- Title -->
     <div class="title">Enter Your M-SEPA PIN</div>
 
-    <!-- Avatar (#8E4585) -->
+    <!-- Avatar (burgundy) -->
     <div class="avatar">PS</div>
 
     <!-- Name -->
