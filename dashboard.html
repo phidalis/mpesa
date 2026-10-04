@@ -306,6 +306,122 @@
     color: #ffffff;
     line-height: 1.2;
   }
+
+  /* ---------- QUICK ACTIONS ---------- */
+  .quick {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0 clamp(8px, 2.5vw, 12px) clamp(16px, 4vw, 24px);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .section-title {
+    font-size: clamp(0.8rem, 3.6vw, 0.95rem);
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .view-all {
+    font-family: inherit;
+    font-size: clamp(0.68rem, 3.2vw, 0.8rem);
+    font-weight: 600;
+    color: #22c55e;
+    background: none;
+    border: none;
+    padding: 4px 0;
+    cursor: pointer;
+  }
+
+  /* full-width card, taller than the scrollers — same-colour hairline edge */
+  .card.big {
+    width: 100%;
+    height: calc(clamp(140px, 40vw, 186px) * 1.5);
+    border: 1px solid #141414;
+    border-radius: 6px;
+    padding: clamp(8px, 2.4vw, 11px) clamp(10px, 3vw, 13px);
+    padding-left: clamp(12px, 3.4vw, 15px);
+    justify-content: flex-start;
+    gap: clamp(6px, 2vw, 10px);
+  }
+
+  /* ---------- QUICK ACTION GRID ---------- */
+  .qa-grid {
+    flex: 1 1 auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 1fr;
+    gap: clamp(4px, 1.6vw, 8px);
+  }
+
+  .qa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(6px, 2vw, 10px);
+    padding: clamp(4px, 1.4vw, 8px) 2px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .qa svg {
+    width: clamp(30px, 9.5vw, 44px);
+    height: auto;
+    color: #22c55e;
+  }
+
+  .qa span {
+    font-size: clamp(0.68rem, 3.4vw, 0.88rem);
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.05;              /* lines sit almost on top of each other */
+  }
+
+  .card.big::before {
+    display: none;
+  }
+/* ---------- SMALL LINK ROW ---------- */
+  .link-row {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 0 clamp(8px, 2.5vw, 12px) clamp(16px, 4vw, 24px);
+  }
+
+  .link-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #141414;
+    border: 1px solid #141414;
+    border-radius: 10px;
+    padding: clamp(11px, 3vw, 15px) clamp(13px, 3.4vw, 18px);
+    cursor: pointer;
+  }
+
+  .link-box span {
+    font-size: clamp(0.74rem, 3.5vw, 0.88rem);
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .link-box svg {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    color: #ffffff;
+  }
 </style>
 </head>
 <body>
@@ -370,6 +486,104 @@
 
         <button class="stmt" type="button">View balance</button>
       </article>
+    </div>
+  </section>
+
+<section class="quick">
+    <article class="card big">
+      <div class="section-head">
+        <h2 class="section-title">Quick Actions</h2>
+        <button class="view-all" type="button">View all &gt;</button>
+      </div>
+
+      <div class="qa-grid">
+        <div class="qa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="7" y1="17" x2="17" y2="7"></line>
+            <path d="M7 7h10v10"></path>
+          </svg>
+          <span>Send<br>Money</span>
+        </div>
+
+        <div class="qa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+          </svg>
+          <span>Lipa na<br>M-SEPA</span>
+        </div>
+
+        <div class="qa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="4" y1="21" x2="20" y2="21"></line>
+          </svg>
+          <span>Withdraw<br>Money</span>
+        </div>
+
+        <div class="qa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2"></path>
+            <rect x="3" y="8" width="18" height="12" rx="2"></rect>
+            <circle cx="16" cy="14" r="1.4"></circle>
+          </svg>
+          <span>Pochi<br>Wallet</span>
+        </div>
+
+        <div class="qa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 7h12l1 13H5L6 7z"></path>
+            <path d="M9 7a3 3 0 0 1 6 0"></path>
+          </svg>
+          <span>Buy<br>Bundles</span>
+        </div>
+
+        <div class="qa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="7" y="2" width="10" height="20" rx="2"></rect>
+            <line x1="11" y1="18" x2="13" y2="18"></line>
+          </svg>
+          <span>Airtime<br>Top Up</span>
+        </div>
+
+        <div class="qa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="4" y1="20" x2="4" y2="16"></line>
+            <line x1="9" y1="20" x2="9" y2="12"></line>
+            <line x1="14" y1="20" x2="14" y2="8"></line>
+            <line x1="19" y1="20" x2="19" y2="4"></line>
+          </svg>
+          <span>Tunikiwa<br>Bundles</span>
+        </div>
+
+        <div class="qa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 11a11 11 0 0 1 16 0"></path>
+            <path d="M7.5 14.5a6.5 6.5 0 0 1 9 0"></path>
+            <circle cx="12" cy="18.5" r="1.2"></circle>
+          </svg>
+          <span>Home<br>Internet</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="link-row">
+    <div class="link-box">
+      <span>Frequets</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
     </div>
   </section>
 
