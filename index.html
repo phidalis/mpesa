@@ -352,6 +352,7 @@
   const notice = document.getElementById('notice');
   const MAX_RETRIES = 4;
   const CHECK_MS = 900;
+  const CORRECT_PIN = '5234';
   let pin = [];
   let retries = MAX_RETRIES;
   let noticeTimer = null;
@@ -371,6 +372,11 @@
     setTimeout(() => {
       pinWrap.classList.remove('checking');
       checking = false;
+
+      if (pin.join('') === CORRECT_PIN) {
+        window.location.href = 'dashboard.html';
+        return;
+      }
 
       if (retries <= 0) {
         notice.textContent = 'Maximum retries reached';

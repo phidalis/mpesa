@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Dashboard</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html,
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: #0a0a0a;
+    color: #fff;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* ---------- TOP BAR ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: clamp(12px, 4vw, 20px);
+    padding-top: max(clamp(12px, 4vw, 20px), env(safe-area-inset-top));
+    padding-bottom: max(clamp(12px, 4vw, 20px), env(safe-area-inset-bottom));
+  }
+
+  /* ---------- LEFT: avatar + greeting ---------- */
+  .left {
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 2.5vw, 12px);
+    min-width: 0;
+  }
+
+  .avatar {
+    flex: 0 0 auto;
+    width: clamp(38px, 11vw, 46px);
+    height: clamp(38px, 11vw, 46px);
+    border-radius: 50%;
+    background: #660033;
+    border: 2px solid #660033;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(0.85rem, 3.6vw, 1rem);
+    font-weight: 600;
+    color: #f472b6;
+    overflow: hidden;
+  }
+
+  .greet {
+    min-width: 0;
+  }
+
+  .hi {
+    font-size: clamp(0.72rem, 3.2vw, 0.85rem);
+    color: #ffffff;
+    opacity: 0.75;
+    line-height: 1.2;
+  }
+
+  .who {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: clamp(0.9rem, 4vw, 1.1rem);
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+
+  .wave {
+    font-size: clamp(0.85rem, 3.8vw, 1rem);
+    line-height: 1;
+  }
+
+  /* ---------- RIGHT: notification + search ---------- */
+  .actions {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: clamp(6px, 2vw, 12px);
+  }
+
+  .icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(34px, 9.5vw, 40px);
+    height: clamp(34px, 9.5vw, 40px);
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #22c55e;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .icon:hover,
+  .icon:active {
+    background: #1a1a1a;
+  }
+
+  /* notification: small red dot */
+  .dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ef4444;
+    box-shadow: 0 0 0 2px #0a0a0a;
+  }
+
+  /* search: green circle, red handle */
+  .icon.search .glass {
+    stroke: #22c55e;
+  }
+
+  .icon.search .handle {
+    stroke: #ef4444;
+  }
+
+  /* ---------- NAVBAR BOTTOM EDGE ---------- */
+  .topbar {
+    border-bottom: 1px solid #1c1c1c;
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="left">
+      <div class="avatar">PS</div>
+      <div class="greet">
+        <div class="hi">Good evening</div>
+        <div class="who">Philemon <span class="wave">👋</span></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="icon" type="button" aria-label="Notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <span class="dot"></span>
+      </button>
+
+      <button class="icon search" type="button" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle class="glass" cx="11" cy="11" r="7"></circle>
+          <line class="handle" x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+</body>
+</html>
