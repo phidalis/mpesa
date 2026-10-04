@@ -140,6 +140,85 @@
   .topbar {
     border-bottom: 1px solid #1c1c1c;
   }
+
+  /* ---------- PRODUCT CARDS (horizontal scroll) ---------- */
+  .products {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: clamp(12px, 3.5vw, 18px) 0;
+  }
+
+  .track {
+    display: flex;
+    gap: clamp(10px, 3vw, 14px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 2px clamp(12px, 4vw, 20px);
+    scrollbar-width: none;
+  }
+
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .card {
+    flex: 0 0 auto;
+    height: clamp(112px, 32vw, 152px);
+    border-radius: 14px;
+    background: #141414;
+    border: 1px solid #1f1f1f;
+    padding: clamp(10px, 3vw, 14px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    scroll-snap-align: start;
+    overflow: hidden;
+  }
+
+  .card.wide,
+  .card.small {
+    width: 72%;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .tag {
+    font-size: clamp(0.6rem, 2.6vw, 0.7rem);
+    color: #ffffff;
+    opacity: 0.7;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  .chip {
+    font-size: clamp(0.55rem, 2.4vw, 0.65rem);
+    color: #22c55e;
+    background: #10281a;
+    border-radius: 999px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+
+  .amount {
+    font-size: clamp(1.1rem, 5.4vw, 1.5rem);
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.1;
+  }
+
+  .caption {
+    font-size: clamp(0.62rem, 2.7vw, 0.72rem);
+    color: #ffffff;
+    opacity: 0.6;
+  }
 </style>
 </head>
 <body>
@@ -172,6 +251,27 @@
       </button>
     </div>
   </header>
+
+  <section class="products">
+    <div class="track">
+      <article class="card wide">
+        <div class="card-top">
+          <span class="tag">Data Bundle</span>
+          <span class="chip">Active</span>
+        </div>
+        <div class="amount">5.0 GB</div>
+        <div class="caption">Valid for 30 days &middot; KES 450</div>
+      </article>
+
+      <article class="card small">
+        <div class="card-top">
+          <span class="tag">Airtime</span>
+        </div>
+        <div class="amount">100</div>
+        <div class="caption">Safaricom</div>
+      </article>
+    </div>
+  </section>
 
 </body>
 </html>
