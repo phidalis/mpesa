@@ -161,7 +161,7 @@
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: clamp(0.7rem, 3.5vw, 0.8rem);
+    font-size: clamp(0.58rem, 2.8vw, 0.66rem);
     line-height: 1.2;
     letter-spacing: 0.2px;
     color: #ff5c5c;
@@ -182,6 +182,29 @@
     animation: shake 0.35s ease;
   }
 
+  /* confirming: dots pulse while the PIN is being checked */
+  .pin-boxes.checking .pin-box.filled::after {
+    animation: pulse 0.55s ease-in-out infinite;
+  }
+
+  .pin-boxes.checking .pin-box.filled {
+    animation: glow 0.55s ease-in-out infinite;
+  }
+
+  .pin-boxes.checking .pin-box:nth-child(2)::after { animation-delay: 0.08s; }
+  .pin-boxes.checking .pin-box:nth-child(3)::after { animation-delay: 0.16s; }
+  .pin-boxes.checking .pin-box:nth-child(4)::after { animation-delay: 0.24s; }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+  }
+
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 6px rgba(34, 197, 94, 0.2); }
+    50% { box-shadow: 0 0 16px rgba(34, 197, 94, 0.6); }
+  }
+
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
     20% { transform: translateX(-7px); }
@@ -193,18 +216,18 @@
   /* ---------- PIN BOXES ---------- */
   .pin-boxes {
     display: flex;
-    gap: clamp(9px, 3vw, 14px);
+    gap: clamp(10px, 3.4vw, 16px);
     margin: clamp(6px, 2vh, 16px) 0 clamp(2px, 1vh, 8px);
     justify-content: center;
     flex: 0 0 auto;
   }
 
   .pin-box {
-    width: clamp(38px, 11.5vw, 50px);
-    height: clamp(38px, 11.5vw, 50px);
-    border-radius: clamp(9px, 2.8vw, 12px);
+    width: clamp(44px, 14vw, 60px);
+    height: clamp(44px, 14vw, 60px);
+    border-radius: clamp(11px, 3.4vw, 15px);
     background: #141414;
-    border: 1.5px solid #2a2a2a;
+    border: 2px solid #2a2a2a;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -214,8 +237,8 @@
   /* green dot, hidden by default */
   .pin-box::after {
     content: "";
-    width: clamp(13px, 4vw, 17px);
-    height: clamp(13px, 4vw, 17px);
+    width: clamp(16px, 5vw, 22px);
+    height: clamp(16px, 5vw, 22px);
     border-radius: 50%;
     background: #22c55e;
     opacity: 0;
@@ -268,8 +291,8 @@
   }
 
   .key:active {
-    color: #8E4585;              /* plum tap feedback to match avatar */
-    transform: scale(0.92);
+    color: #f0f0f0;             /* no colour change on press */
+    transform: none;            /* no animation on press */
   }
 
   /* X (backspace) — subtle, still plain but slightly tinted */
@@ -280,8 +303,8 @@
   }
 
   .key.backspace:active {
-    color: #ff4d4d;
-    transform: scale(0.92);
+    color: #ff7a7a;             /* no colour change on press */
+    transform: none;            /* no animation on press */
   }
 
   /* ---------- SHORT SCREENS (SE / landscape) ---------- */
@@ -361,9 +384,11 @@
   const pinWrap = document.getElementById('pinBoxes');
   const notice = document.getElementById('notice');
   const MAX_RETRIES = 4;
+  const CHECK_MS = 900;
   let pin = [];
   let retries = MAX_RETRIES;
   let noticeTimer = null;
+  let checking = false;
 
   function render() {
     boxes.forEach((box, i) => {
@@ -372,27 +397,36 @@
   }
 
   function submitPin() {
-    if (retries <= 0) {
-      notice.textContent = 'Maximum retries reached';
+    checking = true;
+    notice.classList.remove('show');
+    pinWrap.classList.add('checking');
+
+    setTimeout(() => {
+      pinWrap.classList.remove('checking');
+      checking = false;
+
+      if (retries <= 0) {
+        notice.textContent = 'Maximum retries reached';
+        notice.classList.add('show');
+        return;
+      }
+
+      retries -= 1;
+      notice.textContent =
+        'You have entered incorrect pin with ' + retries + (retries === 1 ? ' retry' : ' retries') + ' remaining';
       notice.classList.add('show');
-      return;
-    }
+      pinWrap.classList.add('shake');
 
-    retries -= 1;
-    notice.textContent =
-      'You have entered incorrect pin with ' + retries + (retries === 1 ? ' retry' : ' retries') + ' remaining';
-    notice.classList.add('show');
-    pinWrap.classList.add('shake');
+      setTimeout(() => pinWrap.classList.remove('shake'), 400);
+      setTimeout(resetPin, 400);
 
-    setTimeout(() => pinWrap.classList.remove('shake'), 400);
-    setTimeout(resetPin, 400);
-
-    if (!noticeTimer) {
-      noticeTimer = setTimeout(() => {
-        notice.classList.remove('show');
-        noticeTimer = null;
-      }, 2500);
-    }
+      if (!noticeTimer) {
+        noticeTimer = setTimeout(() => {
+          notice.classList.remove('show');
+          noticeTimer = null;
+        }, 2500);
+      }
+    }, CHECK_MS);
   }
 
   function resetPin() {
@@ -401,7 +435,7 @@
   }
 
   function addDigit(num) {
-    if (pin.length >= boxes.length) return;
+    if (checking || pin.length >= boxes.length) return;
     pin.push(num);
     render();
     if (pin.length === boxes.length) {
@@ -414,6 +448,7 @@
   });
 
   backspace.addEventListener('click', () => {
+    if (checking) return;
     pin.pop();
     render();
   });
@@ -421,7 +456,7 @@
   window.addEventListener('keydown', (e) => {
     if (/^[0-9]$/.test(e.key)) {
       addDigit(e.key);
-    } else if (e.key === 'Backspace') {
+    } else if (e.key === 'Backspace' && !checking) {
       pin.pop();
       render();
     }
