@@ -50,7 +50,7 @@
 
   /* ---------- TITLE (near the top) ---------- */
   .title {
-    font-size: clamp(1.15rem, 5.6vw, 1.6rem);
+    font-size: clamp(0.95rem, 4.6vw, 1.3rem);
     font-weight: 500;
     letter-spacing: 0.5px;
     color: #ffffff;
@@ -101,10 +101,11 @@
   .phone .mask {
     color: #ffffff;
     opacity: 0.75;
-    letter-spacing: 1.2px;
+    letter-spacing: 0.4px;      /* stars sit tight against the digits */
+    margin: 0 1px;
   }
 
-  /* ---------- NUMBER + GEAR (line 1) + BADGE (line 2) ---------- */
+  /* ---------- NUMBER (line 1) + BADGE (line 2) ---------- */
   .meta-row {
     display: flex;
     flex-direction: column;
@@ -113,37 +114,6 @@
     gap: clamp(5px, 1.4vh, 10px);
     width: 100%;
     flex: 0 0 auto;
-  }
-
-  /* number and gear always stay together on the first line */
-  .num-group {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    white-space: nowrap;
-  }
-
-  .gear {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    background: #1a1a1a;
-    color: #b5b5b5;
-    cursor: pointer;
-    transition: color 0.15s ease, background 0.15s ease;
-  }
-
-  .gear:hover,
-  .gear:active {
-    color: #ffffff;
-    background: #262626;
   }
 
   .data-badge {
@@ -336,19 +306,9 @@
     <!-- Name -->
     <div class="name">John Doe</div>
 
-<!-- 10-digit number + settings icon + data notice box -->
+<!-- 10-digit number (masked) + data notice box -->
     <div class="meta-row">
-      <div class="num-group">
-        <div class="phone">071 <span class="mask">***</span> 78</div>
-
-        <button class="gear" id="gear" type="button" aria-label="Settings">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"></path>
-          </svg>
-        </button>
-      </div>
+      <div class="phone">071<span class="mask">*****</span>78</div>
 
       <div class="data-badge">This app will not use any of your data bundles</div>
     </div>
