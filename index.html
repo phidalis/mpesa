@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Enter Cash PIN</title>
+<style>
+  /* ---------- RESET ---------- */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    height: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ---------- BODY: dark background + center ---------- */
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: #0a0a0a;
+    color: #fff;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: clamp(10px, 3.5vw, 20px);
+    padding-top: max(clamp(10px, 3.5vw, 20px), env(safe-area-inset-top));
+    padding-bottom: max(clamp(10px, 3.5vw, 20px), env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  /* ---------- CARD ---------- */
+  .card {
+    width: 100%;
+    max-width: 380px;
+    margin: auto;                    /* keeps it centred, still scrollable if it must shrink */
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: clamp(5px, 1.6vh, 13px);
+  }
+
+  /* ---------- TITLE ---------- */
+  .title {
+    font-size: clamp(1rem, 4.6vw, 1.4rem);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: #f5f5f5;
+    flex: 0 0 auto;
+  }
+
+  /* ---------- AVATAR (#8E4585 background) ---------- */
+  .avatar {
+    width: clamp(52px, 17vw, 74px);
+    height: clamp(52px, 17vw, 74px);
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #8E4585;                                        /* solid plum purple */
+    border: 2px solid #a65b9d;                                  /* slightly lighter border */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.1rem, 5vw, 1.6rem);
+    font-weight: 600;
+    color: #ffffff;
+    box-shadow: 0 8px 24px rgba(142, 69, 133, 0.45);            /* matching glow */
+    overflow: hidden;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ---------- NAME ---------- */
+  .name {
+    font-size: clamp(0.9rem, 4.2vw, 1.15rem);
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: #ffffff;
+    flex: 0 0 auto;
+  }
+
+  /* ---------- 10-DIGIT NUMBER ---------- */
+  .phone {
+    font-size: clamp(0.68rem, 3.4vw, 0.78rem);
+    letter-spacing: 1.4px;
+    color: #9a9a9a;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- NUMBER + GEAR (line 1) + BADGE (line 2) ---------- */
+  .meta-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(4px, 1.2vh, 8px);
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  /* number and gear always stay together on the first line */
+  .num-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    white-space: nowrap;
+  }
+
+  .gear {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #1a1a1a;
+    color: #b5b5b5;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  .gear:hover,
+  .gear:active {
+    color: #ffffff;
+    background: #262626;
+  }
+
+  .data-badge {
+    flex: 0 1 auto;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: clamp(0.55rem, 2.7vw, 0.62rem);
+    line-height: 1;
+    letter-spacing: 0.2px;
+    color: #14532d;
+    background: #dcfce7;
+    border-radius: 999px;
+    padding: 5px 10px;
+  }
+
+  /* ---------- NOTICE (single line, red) ---------- */
+  .notice {
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: clamp(0.62rem, 3.1vw, 0.72rem);
+    line-height: 1.2;
+    letter-spacing: 0.2px;
+    color: #ff5c5c;
+    flex: 0 0 auto;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-3px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .notice.show {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .pin-boxes.shake {
+    animation: shake 0.35s ease;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-7px); }
+    40% { transform: translateX(7px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  /* ---------- PIN BOXES ---------- */
+  .pin-boxes {
+    display: flex;
+    gap: clamp(7px, 2.6vw, 10px);
+    margin: clamp(4px, 1.4vh, 10px) 0 clamp(2px, 1vh, 6px);
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .pin-box {
+    width: clamp(32px, 9.5vw, 42px);
+    height: clamp(32px, 9.5vw, 42px);
+    border-radius: clamp(8px, 2.4vw, 10px);
+    background: #141414;
+    border: 1.5px solid #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  /* green dot, hidden by default */
+  .pin-box::after {
+    content: "";
+    width: clamp(11px, 3.4vw, 14px);
+    height: clamp(11px, 3.4vw, 14px);
+    border-radius: 50%;
+    background: #22c55e;
+    opacity: 0;
+    transform: scale(0.4);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+  }
+
+  /* filled: green border + visible dot, dark background kept */
+  .pin-box.filled {
+    border-color: #22c55e;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+  }
+  .pin-box.filled::after {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ---------- KEYPAD (fills remaining height, never overflows) ---------- */
+  .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, minmax(34px, 1fr));
+    gap: clamp(2px, 1vh, 8px) 10px;
+    width: 100%;
+    max-width: 300px;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  /* PLAIN numbers — no box, no border, no background */
+  .key {
+    background: transparent;
+    border: none;
+    color: #f0f0f0;
+    font-size: clamp(1.35rem, 6.5vw, 1.8rem);
+    font-weight: 400;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 34px;
+    padding: 0;
+    user-select: none;
+    touch-action: manipulation;
+    transition: color 0.12s ease, transform 0.08s ease;
+  }
+
+  .key:active {
+    color: #8E4585;              /* plum tap feedback to match avatar */
+    transform: scale(0.92);
+  }
+
+  /* X (backspace) — subtle, still plain but slightly tinted */
+  .key.backspace {
+    color: #ff7a7a;
+    font-size: clamp(1.1rem, 5vw, 1.4rem);
+    font-weight: 500;
+  }
+
+  .key.backspace:active {
+    color: #ff4d4d;
+    transform: scale(0.92);
+  }
+
+  /* ---------- SHORT SCREENS (SE / landscape) ---------- */
+  @media (max-height: 640px) {
+    body { padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+    .card { gap: clamp(3px, 1vh, 7px); }
+    .pin-boxes { margin: clamp(2px, 1vh, 6px) 0 0; }
+    .keypad { grid-template-rows: repeat(4, minmax(30px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <!-- Title -->
+    <div class="title">Enter your cash PIN</div>
+
+    <!-- Avatar (#8E4585) -->
+    <div class="avatar">JD</div>
+
+    <!-- Name -->
+    <div class="name">John Doe</div>
+
+    <!-- 10-digit number + settings icon + light green badge -->
+    <div class="meta-row">
+      <div class="num-group">
+        <div class="phone">0712 345 678</div>
+
+        <button class="gear" id="gear" type="button" aria-label="Settings">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="data-badge">This app will not use any of your data bundles</div>
+    </div>
+
+    <!-- Notice: shown when PIN is entered (one line, red) -->
+    <div class="notice" id="notice">You have entered incorrect pin with 4 retries remaining</div>
+
+    <!-- PIN boxes -->
+    <div class="pin-boxes" id="pinBoxes">
+      <div class="pin-box"></div>
+      <div class="pin-box"></div>
+      <div class="pin-box"></div>
+      <div class="pin-box"></div>
+    </div>
+
+    <!-- Keypad: plain numbers -->
+    <div class="keypad">
+      <button class="key" data-num="1">1</button>
+      <button class="key" data-num="2">2</button>
+      <button class="key" data-num="3">3</button>
+
+      <button class="key" data-num="4">4</button>
+      <button class="key" data-num="5">5</button>
+      <button class="key" data-num="6">6</button>
+
+      <button class="key" data-num="7">7</button>
+      <button class="key" data-num="8">8</button>
+      <button class="key" data-num="9">9</button>
+
+      <div></div>
+      <button class="key" data-num="0">0</button>
+      <button class="key backspace" id="backspace">✕</button>
+    </div>
+  </div>
+
+<script>
+  const boxes = document.querySelectorAll('.pin-box');
+  const keys = document.querySelectorAll('.key[data-num]');
+  const backspace = document.getElementById('backspace');
+  const pinWrap = document.getElementById('pinBoxes');
+  const notice = document.getElementById('notice');
+  const MAX_RETRIES = 4;
+  let pin = [];
+  let retries = MAX_RETRIES;
+  let noticeTimer = null;
+
+  function render() {
+    boxes.forEach((box, i) => {
+      box.classList.toggle('filled', Boolean(pin[i]));
+    });
+  }
+
+  function submitPin() {
+    if (retries <= 0) {
+      notice.textContent = 'Maximum retries reached';
+      notice.classList.add('show');
+      return;
+    }
+
+    retries -= 1;
+    notice.textContent =
+      'You have entered incorrect pin with ' + retries + (retries === 1 ? ' retry' : ' retries') + ' remaining';
+    notice.classList.add('show');
+    pinWrap.classList.add('shake');
+
+    setTimeout(() => pinWrap.classList.remove('shake'), 400);
+    setTimeout(resetPin, 400);
+
+    if (!noticeTimer) {
+      noticeTimer = setTimeout(() => {
+        notice.classList.remove('show');
+        noticeTimer = null;
+      }, 2500);
+    }
+  }
+
+  function resetPin() {
+    pin = [];
+    render();
+  }
+
+  function addDigit(num) {
+    if (pin.length >= boxes.length) return;
+    pin.push(num);
+    render();
+    if (pin.length === boxes.length) {
+      setTimeout(submitPin, 200);
+    }
+  }
+
+  keys.forEach(btn => {
+    btn.addEventListener('click', () => addDigit(btn.dataset.num));
+  });
+
+  backspace.addEventListener('click', () => {
+    pin.pop();
+    render();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (/^[0-9]$/.test(e.key)) {
+      addDigit(e.key);
+    } else if (e.key === 'Backspace') {
+      pin.pop();
+      render();
+    }
+  });
+</script>
+</body>
+</html>
