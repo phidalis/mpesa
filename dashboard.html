@@ -165,17 +165,30 @@
   }
 
   .card {
+    position: relative;
     flex: 0 0 auto;
     height: clamp(112px, 32vw, 152px);
     border-radius: 14px;
     background: #141414;
     border: 1px solid #1f1f1f;
     padding: clamp(10px, 3vw, 14px);
+    padding-left: clamp(15px, 4.5vw, 20px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     scroll-snap-align: start;
     overflow: hidden;
+  }
+
+  /* left accent strip: green at top, blue at bottom */
+  .card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #22c55e 0%, #3b82f6 100%);
   }
 
   .card.wide,
@@ -219,6 +232,80 @@
     color: #ffffff;
     opacity: 0.6;
   }
+
+  /* ---------- BALANCE CARD ---------- */
+  .card.balance {
+    background: #141414;
+    border-color: #1f1f1f;
+  }
+
+  .card.balance .tag {
+    color: #22c55e;
+    opacity: 1;
+  }
+
+  .bal-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .bal {
+    font-size: clamp(1.25rem, 6vw, 1.7rem);
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.1;
+  }
+
+  .bal.blurred {
+    filter: blur(5px);
+    user-select: none;
+  }
+
+  .eye {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+  }
+
+  .eye:active {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .stmt {
+    align-self: stretch;
+    margin-top: 2px;
+    font-family: inherit;
+    font-size: clamp(0.68rem, 3.1vw, 0.8rem);
+    font-weight: 600;
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid #22c55e;
+    border-radius: 8px;
+    padding: clamp(6px, 1.5vh, 9px) 10px;
+    cursor: pointer;
+  }
+
+  /* green label variant */
+  .tag.green {
+    color: #22c55e;
+    opacity: 1;
+  }
+
+  .svc {
+    font-size: clamp(0.85rem, 4vw, 1rem);
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.2;
+  }
 </style>
 </head>
 <body>
@@ -254,24 +341,52 @@
 
   <section class="products">
     <div class="track">
-      <article class="card wide">
+      <article class="card wide balance">
         <div class="card-top">
-          <span class="tag">Data Bundle</span>
-          <span class="chip">Active</span>
+          <span class="tag">M-SEPA Balance</span>
         </div>
-        <div class="amount">5.0 GB</div>
-        <div class="caption">Valid for 30 days &middot; KES 450</div>
+
+        <div class="bal-row">
+          <span class="bal" id="balance">Ksh 1,500.00</span>
+          <button class="eye" id="eye" type="button" aria-label="Hide balance">
+            <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+
+        <button class="stmt" type="button">View statement</button>
       </article>
 
-      <article class="card small">
+      <article class="card wide">
         <div class="card-top">
-          <span class="tag">Airtime</span>
+          <span class="tag green">My balances</span>
         </div>
-        <div class="amount">100</div>
-        <div class="caption">Safaricom</div>
+
+        <div class="svc">Airtime</div>
+        <div class="bal">Ksh. 0</div>
+
+        <button class="stmt" type="button">View balance</button>
       </article>
     </div>
   </section>
+
+<script>
+  const balance = document.getElementById('balance');
+  const eyeIcon = document.getElementById('eyeIcon');
+
+  let hidden = false;
+
+  document.getElementById('eye').addEventListener('click', () => {
+    hidden = !hidden;
+    balance.classList.toggle('blurred', hidden);
+    eyeIcon.innerHTML = hidden
+      ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle>';
+  });
+</script>
 
 </body>
 </html>
