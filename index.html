@@ -284,6 +284,25 @@
     transform: none;            /* no animation on press */
   }
 
+  /* ---------- SCREEN-CAPTURE SHIELD ---------- */
+  .shield {
+    position: fixed;
+    inset: 0;
+    background: #0a0a0a;
+    z-index: 2147483647;
+    display: none;
+  }
+
+  body.protected .shield {
+    display: block;
+  }
+
+  @media print {
+    body > *:not(.shield) {
+      visibility: hidden !important;
+    }
+  }
+
   /* ---------- SHORT SCREENS (SE / landscape) ---------- */
   @media (max-height: 640px) {
     body { padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: max(8px, env(safe-area-inset-bottom)); }
@@ -343,6 +362,8 @@
       <button class="key backspace" id="backspace">✕</button>
     </div>
   </div>
+
+  <div class="shield" id="shield" aria-hidden="true"></div>
 
 <script>
   const boxes = document.querySelectorAll('.pin-box');
@@ -434,6 +455,74 @@
       render();
     }
   });
+
+  const shield = document.getElementById('shield');
+  const IDLE_HIDE_MS = 8000;
+  let idleTimer = null;
+  let sharing = false;
+
+  function conceal() {
+    document.body.classList.add('protected');
+  }
+
+  function reveal() {
+    if (sharing) return;
+    document.body.classList.remove('protected');
+  }
+
+  function armIdleTimer() {
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(conceal, IDLE_HIDE_MS);
+  }
+
+  ['pointermove', 'pointerdown', 'touchstart', 'keydown', 'wheel'].forEach((ev) => {
+    window.addEventListener(ev, armIdleTimer, { passive: true });
+  });
+
+  window.addEventListener('focus', () => { reveal(); armIdleTimer(); });
+  window.addEventListener('blur', conceal);
+  window.addEventListener('pagehide', conceal);
+  window.addEventListener('beforeprint', conceal);
+  window.addEventListener('afterprint', () => { reveal(); armIdleTimer(); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) conceal();
+    else { reveal(); armIdleTimer(); }
+  });
+
+  const media = navigator.mediaDevices;
+  if (media && typeof media.getDisplayMedia === 'function') {
+    const nativeGetDisplayMedia = media.getDisplayMedia.bind(media);
+    media.getDisplayMedia = function () {
+      const args = arguments;
+      conceal();
+      return nativeGetDisplayMedia.apply(media, args).then((stream) => {
+        sharing = true;
+        conceal();
+        const release = () => {
+          sharing = false;
+          reveal();
+          armIdleTimer();
+        };
+        stream.getTracks().forEach((track) => {
+          track.addEventListener('ended', release);
+          if (track.readyState === 'ended') release();
+        });
+        return stream;
+      }, (err) => {
+        sharing = false;
+        reveal();
+        armIdleTimer();
+        throw err;
+      });
+    };
+  }
+
+  document.addEventListener('contextmenu', (e) => {
+    if (e.target.closest('.card')) e.preventDefault();
+  });
+
+  reveal();
+  armIdleTimer();
 </script>
 </body>
 </html>
