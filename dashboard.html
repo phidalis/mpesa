@@ -392,8 +392,19 @@
     cursor: pointer;
   }
 
+  .icon-circle {
+    width: clamp(34px, 8.6vw, 50px);
+    height: clamp(34px, 8.6vw, 50px);
+    border-radius: 50%;
+    background: #2b2b2b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
   .qa svg {
-    width: clamp(36px, 11vw, 50px);
+    width: 66%;
     height: auto;
     flex: 0 0 auto;
   }
@@ -505,16 +516,131 @@
     opacity: 1;
   }
 
-  .mini-label {
+  /* ---------- FLOATING LAYER: SCAN TO PAY + ASSISTANT ---------- */
+  /* sized for a phone browser: compact, bottom-right, never alters page layout */
+  :root {
+    --scan-bottom: 14px;
+    --scan-height: 56px;
+    --fab-gap: 10px;
+    --fab-size: 56px;
+    --fab-right: 14px;
+  }
+
+  .float-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+
+  .float-layer > * {
+    pointer-events: auto;
+  }
+
+  .fab-assist {
+    position: fixed;
+    right: var(--fab-right);
+    bottom: calc(var(--scan-bottom) + var(--scan-height) + var(--fab-gap));
+    width: var(--fab-size);
+    height: var(--fab-size);
+    padding: 0;
+    border: 0;
+    border-radius: 16px;
+    background: #292929;
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+    cursor: pointer;
+    display: block;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .fab-assist svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .fab-assist img {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 10px clamp(8px, 2.4vw, 12px);
-    font-size: clamp(0.6rem, 2.9vw, 0.74rem);
-    font-weight: 600;
-    color: #ffffff;
-    background: linear-gradient(180deg, rgba(10, 10, 10, 0), rgba(10, 10, 10, 0.88));
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* the real images are shown; the inline drawings are hidden fallbacks */
+  .fab-assist .fab-face,
+  .fab-scan .qr {
+    display: block;
+  }
+
+  .fab-assist .fab-drawing,
+  .fab-scan .qr-drawing {
+    display: none;
+  }
+
+  .fab-scan {
+    position: fixed;
+    right: var(--fab-right);
+    bottom: var(--scan-bottom);
+    width: min(230px, calc(100vw - 28px));
+    max-width: calc(100vw - 28px);
+    height: var(--scan-height);
+    padding: 0 14px;
+    border: 0;
+    border-radius: 18px;
+    background: #292929;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #f3f3f3;
+    font-family: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .fab-scan .qr {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    display: block;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  .fab-scan .txt {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 480px) {
+    :root {
+      --scan-bottom: 18px;
+      --scan-height: 64px;
+      --fab-gap: 12px;
+      --fab-size: 64px;
+      --fab-right: 18px;
+    }
+
+    .fab-scan {
+      width: 268px;
+      border-radius: 20px;
+      padding: 0 18px;
+    }
+
+    .fab-scan .qr {
+      flex-basis: 38px;
+      width: 38px;
+      height: 38px;
+      border-radius: 7px;
+    }
+
+    .fab-scan .txt {
+      font-size: 17px;
+    }
   }
 </style>
 </head>
@@ -524,7 +650,7 @@
     <div class="left">
       <div class="avatar">PS</div>
       <div class="greet">
-        <div class="hi">Good evening</div>
+        <div class="hi" id="greeting">Good evening</div>
         <div class="who">Philemon <span class="wave">👋</span></div>
       </div>
     </div>
@@ -576,7 +702,7 @@
         </div>
 
         <div class="svc">Airtime</div>
-        <div class="bal">Ksh. 0</div>
+        <div class="bal" id="balance2">Ksh. 0</div>
 
         <button class="stmt" type="button">View balance</button>
       </article>
@@ -592,111 +718,122 @@
 
       <div class="qa-grid">
         <div class="qa">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9.4" fill="#2a2a2a"></circle><g transform="translate(12 12) scale(0.74) translate(-12 -12)">
-            <path d="M3.4 10.4 19.49 3.85Q20.6 3.4 20.18 4.52L14.2 20.6 10.6 14.2Z" fill="none"
-                  stroke="#22c55e" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"></path>
-            <path d="M10.6 14.2 19.8 4.26" fill="none" stroke="#ef4444" stroke-width="1.5"
-                  stroke-linecap="round"></path>
-          </g></svg>
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <g transform="translate(12 12) scale(0.74) translate(-12 -12)">
+                <path d="M3.4 10.4 19.49 3.85Q20.6 3.4 20.18 4.52L14.2 20.6 10.6 14.2Z" fill="none"
+                      stroke="#22c55e" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"></path>
+                <path d="M10.6 14.2 19.8 4.26" fill="none" stroke="#ef4444" stroke-width="1.5"
+                      stroke-linecap="round"></path>
+              </g>
+            </svg>
+          </div>
           <span>Send<br>Money</span>
         </div>
 
         <div class="qa">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9.4" fill="#2a2a2a"></circle><g transform="translate(12 12) scale(0.74) translate(-12 -12)">
-            <path d="M4.6 9.8h14.8L17.6 19H6.4Z" fill="none" stroke="#22c55e" stroke-width="1.5"
-                  stroke-linejoin="round"></path>
-            <path d="M8.6 9.8a3.4 3.4 0 0 1 6.8 0" fill="none" stroke="#ef4444" stroke-width="1.5"
-                  stroke-linecap="round"></path>
-            <path d="M9.2 12.6v3.6M14.8 12.6v3.6" fill="none" stroke="#22c55e" stroke-width="1.2"
-                  stroke-linecap="round"></path>
-          </g></svg>
+          <div class="icon-circle">
+            <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <path d="M15 21a9 9 0 0 1 18 0" stroke="#F04B50" stroke-width="3.4" stroke-linecap="round"></path>
+              <path d="M8 21h32M8 21l4 15h24l4-15" stroke="#39B54A" stroke-width="3.4" stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+              <path d="M17 24.5v8M24 24.5v8M31 24.5v8" stroke="#39B54A" stroke-width="2.8"
+                    stroke-linecap="round"></path>
+            </svg>
+          </div>
           <span>Lipa na<br>M-PESA</span>
         </div>
 
         <div class="qa">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9.4" fill="#2a2a2a"></circle><g transform="translate(12 12) scale(0.74) translate(-12 -12)">
-            <rect x="3.6" y="5.4" width="16.8" height="10.2" rx="2" fill="none" stroke="#22c55e"
-                  stroke-width="1.5"></rect>
-            <path d="M3.6 9h16.8" fill="none" stroke="#22c55e" stroke-width="1.2"></path>
-            <path d="M12 17.2v4.4M9.6 19.4 12 21.8l2.4-2.4" fill="none" stroke="#ef4444"
-                  stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-          </g></svg>
+          <div class="icon-circle">
+            <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <rect x="6.5" y="9" width="35" height="21.5" rx="4" stroke="#39B54A" stroke-width="3.4"></rect>
+              <path d="M6.5 16.5h35" stroke="#39B54A" stroke-width="2.8"></path>
+              <rect x="11.5" y="20.5" width="9.5" height="5" rx="1.5" stroke="#39B54A" stroke-width="2.6"></rect>
+              <path d="M31.5 33v7.5" stroke="#F04B50" stroke-width="3.4" stroke-linecap="round"></path>
+              <path d="m27.9 37 3.6 3.6 3.6-3.6" stroke="#F04B50" stroke-width="3.4" stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+            </svg>
+          </div>
           <span>Withdraw<br>Money</span>
         </div>
 
         <div class="qa">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9.4" fill="#2a2a2a"></circle><g transform="translate(12 12) scale(0.74) translate(-12 -12)">
-            <circle cx="12" cy="12" r="7.4" fill="#22c55e"></circle>
-            <path d="M7.4 14.4q4.6-5.2 9.2 0" fill="none" stroke="#ef4444" stroke-width="1.7"
-                  stroke-linecap="round"></path>
-            <path d="M9.2 11.2q2.8-2.6 5.6 0" fill="none" stroke="#ffffff" stroke-width="1.3"
-                  stroke-linecap="round"></path>
-          </g></svg>
+          <div class="icon-circle">
+            <svg viewBox="0 0 48 48" aria-hidden="true">
+              <circle cx="24" cy="24" r="13" fill="#39B54A"></circle>
+              <path d="M16.6 21.8q7.4-5.6 14.8 0" fill="none" stroke="#ffffff" stroke-width="3"
+                    stroke-linecap="round"></path>
+              <path d="M13.6 28.4q10.4-7.6 20.8 0" fill="none" stroke="#F04B50" stroke-width="3.4"
+                    stroke-linecap="round"></path>
+            </svg>
+          </div>
           <span>Pochi<br>Wallet</span>
         </div>
 
         <div class="qa">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9.4" fill="#2a2a2a"></circle><g transform="translate(12 12) scale(0.74) translate(-12 -12)">
-            <path d="M6.6 9.4a7.6 7.6 0 0 1 10.8 0" fill="none" stroke="#22c55e" stroke-width="1.4"
-                  stroke-linecap="round"></path>
-            <path d="M9.2 12.2a4 4 0 0 1 5.6 0" fill="none" stroke="#22c55e" stroke-width="1.4"
-                  stroke-linecap="round"></path>
-            <text x="12" y="19.4" text-anchor="middle" font-family="system-ui, sans-serif"
-                  font-size="6.4" font-weight="800" fill="#22c55e"
-                  textLength="15" lengthAdjust="spacingAndGlyphs">PATA<tspan fill="#ef4444"> </tspan></text>
-            <text x="12" y="19.4" text-anchor="middle" font-family="system-ui, sans-serif"
-                  font-size="6.4" font-weight="800" fill="#ef4444"
-                  textLength="15" lengthAdjust="spacingAndGlyphs" dx="7.6">MORE</text>
-          </g></svg>
+          <div class="icon-circle">
+            <svg viewBox="0 0 48 48" aria-hidden="true">
+              <text x="24" y="22.6" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+                    font-size="12.6" font-weight="800" letter-spacing="-0.2" fill="#39B54A">PATA</text>
+              <text x="24" y="36.2" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+                    font-size="12.6" font-weight="800" letter-spacing="-0.2" fill="#F04B50">MORE</text>
+            </svg>
+          </div>
           <span>Buy<br>Bundles</span>
         </div>
 
         <div class="qa">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9.4" fill="#2a2a2a"></circle><g transform="translate(12 12) scale(0.74) translate(-12 -12)">
-            <path d="M8.4 5.6c-2 1.4-2.6 3.9-1.6 6.4 1.5 3.7 4.5 6.7 8.2 8.2 2.5 1 5 .6 6.4-1.6.3-.4.2-1-.2-1.3l-2.2-1.6c-.4-.3-1-.2-1.3.2l-.8 1c-1.8-.7-3.4-2.3-4.1-4.1l1-.8c.4-.3.5-.9.2-1.3L12.4 8.6c-.3-.4-.9-.5-1.3-.2Z"
-                  fill="none" stroke="#22c55e" stroke-width="1.5" stroke-linejoin="round"></path>
-            <path d="M16.6 3.6h4.2v4.2M20.8 3.6l-4.6 4.6" fill="none" stroke="#ef4444"
-                  stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
-          </g></svg>
+          <div class="icon-circle">
+            <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <g transform="translate(2 8) scale(1.4)">
+                <path d="M8.4 5.6c-2 1.4-2.6 3.9-1.6 6.4 1.5 3.7 4.5 6.7 8.2 8.2 2.5 1 5 .6 6.4-1.6.3-.4.2-1-.2-1.3l-2.2-1.6c-.4-.3-1-.2-1.3.2l-.8 1c-1.8-.7-3.4-2.3-4.1-4.1l1-.8c.4-.3.5-.9.2-1.3L12.4 8.6c-.3-.4-.9-.5-1.3-.2Z"
+                      stroke="#39B54A" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"></path>
+              </g>
+              <path d="M28.5 22.5 39 12" stroke="#F04B50" stroke-width="3.4" stroke-linecap="round"></path>
+              <path d="M31.2 13.8 39 12 37.2 19.8" stroke="#F04B50" stroke-width="3.4" stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+            </svg>
+          </div>
           <span>Airtime<br>Top Up</span>
         </div>
 
         <div class="qa">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9.4" fill="#2a2a2a"></circle><g transform="translate(12 12) scale(0.74) translate(-12 -12)">
-            <path d="M5 11.6h14v7.8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1Z" fill="none" stroke="#22c55e"
-                  stroke-width="1.5" stroke-linejoin="round"></path>
-            <path d="M4 8.6h16v3H4Z" fill="none" stroke="#22c55e" stroke-width="1.5"
-                  stroke-linejoin="round"></path>
-            <path d="M12 8.6c-1.5-2.6-3.9-2.6-3.9-1 0 1.2 1.8 1.5 3.9 1 2.1-.5 3.9.2 3.9-1 0-1.6-2.4-1.6-3.9 1Z"
-                  fill="none" stroke="#ef4444" stroke-width="1.4" stroke-linejoin="round"></path>
-            <path d="M12 11.6v8.8" fill="none" stroke="#22c55e" stroke-width="1.3"></path>
-          </g></svg>
-          <span>Tunikiwa<br>Bundles</span>
+          <div class="icon-circle">
+            <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <rect x="6.5" y="15.5" width="35" height="6" rx="1.5" stroke="#39B54A" stroke-width="3.2"></rect>
+              <path d="M9 21.5v16.5h30V21.5" stroke="#39B54A" stroke-width="3.4" stroke-linejoin="round"
+                    stroke-linecap="round"></path>
+              <path d="M24 21.5v16.5" stroke="#39B54A" stroke-width="3.2"></path>
+              <path d="M24 15.5c-5 .5-9.5-2-9.5-5.3 0-2.4 3.5-2.7 6 .3 2 2.4 3.5 5 3.5 5Z"
+                    stroke="#F04B50" stroke-width="3" stroke-linejoin="round"></path>
+              <path d="M24 15.5c5 .5 9.5-2 9.5-5.3 0-2.4-3.5-2.7-6 .3-2 2.4-3.5 5-3.5 5Z"
+                    stroke="#F04B50" stroke-width="3" stroke-linejoin="round"></path>
+              <circle cx="24" cy="15.5" r="1.9" fill="#F04B50"></circle>
+            </svg>
+          </div>
+          <span>Tunukiwa<br>Bundles</span>
         </div>
 
         <div class="qa">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="9.4" fill="#2a2a2a"></circle><g transform="translate(12 12) scale(0.74) translate(-12 -12)">
-            <path d="M4.4 11.4 12 4.6l7.6 6.8" fill="none" stroke="#22c55e" stroke-width="1.5"
-                  stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M6.4 10.6V19.4h11.2V10.6" fill="none" stroke="#22c55e" stroke-width="1.5"
-                  stroke-linecap="round" stroke-linejoin="round"></path>
-            <path d="M9.1 15.4a3.7 3.7 0 0 1 5.8 0" fill="none" stroke="#ef4444" stroke-width="1.3"
-                  stroke-linecap="round"></path>
-            <path d="M10.8 17.4a1.8 1.8 0 0 1 2.4 0" fill="none" stroke="#ef4444" stroke-width="1.3"
-                  stroke-linecap="round"></path>
-            <circle cx="12" cy="19.2" r="0.9" fill="#ef4444"></circle>
-          </g></svg>
+          <div class="icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <g transform="translate(12 12) scale(0.74) translate(-12 -12)">
+                <path d="M4.4 11.4 12 4.6l7.6 6.8" fill="none" stroke="#22c55e" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M6.4 10.6V19.4h11.2V10.6" fill="none" stroke="#22c55e" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M9.1 15.4a3.7 3.7 0 0 1 5.8 0" fill="none" stroke="#ef4444" stroke-width="1.3"
+                      stroke-linecap="round"></path>
+                <path d="M10.8 17.4a1.8 1.8 0 0 1 2.4 0" fill="none" stroke="#ef4444" stroke-width="1.3"
+                      stroke-linecap="round"></path>
+                <circle cx="12" cy="19.2" r="0.9" fill="#ef4444"></circle>
+              </g>
+            </svg>
+          </div>
           <span>Home<br>Internet</span>
         </div>
-      </div>
+        </div>
     </article>
   </section>
 
@@ -720,26 +857,144 @@
         <div class="shot" data-shot="0">
           <span class="ph">image 1</span>
         </div>
-        <div class="mini-label">Weekend Deal</div>
       </article>
 
       <article class="card mini">
         <div class="shot" data-shot="1">
           <span class="ph">image 1</span>
         </div>
-        <div class="mini-label">Flash Sale</div>
       </article>
 
       <article class="card mini">
         <div class="shot" data-shot="2">
           <span class="ph">image 1</span>
         </div>
-        <div class="mini-label">Top Offer</div>
       </article>
     </div>
   </section>
 
+  <div class="float-layer">
+    <button class="fab-assist" type="button" aria-label="Chat with our assistant">
+      <img class="fab-face" src="zuri.jpeg" alt="">
+      <svg class="fab-drawing" viewBox="0 0 112 112" role="img" aria-hidden="true">
+        <defs>
+          <clipPath id="fabCircle">
+            <circle cx="56" cy="56" r="39"></circle>
+          </clipPath>
+        </defs>
+        <rect width="112" height="112" rx="26" fill="#292929"></rect>
+        <g clip-path="url(#fabCircle)">
+          <circle cx="56" cy="56" r="39" fill="#ffffff"></circle>
+          <path d="M56 22c-16 0-25 10-25 25 0 11-2 23-4 37h14c1-12 1-24 1-32 0-11 5-17 14-17s14 6 14 17c0 8 0 20 1 32h14c-2-14-4-26-4-37 0-15-9-25-25-25z" fill="#2b211a"></path>
+          <path d="M31 96c0-16 10-26 25-26s25 10 25 26z" fill="#ffffff"></path>
+          <rect x="51" y="55" width="10" height="13" rx="4.5" fill="#d99b74"></rect>
+          <ellipse cx="56" cy="47" rx="12" ry="14" fill="#e3a97f"></ellipse>
+          <path d="M43 45c0-11 5-17 13-17s13 6 13 17c0-4-4-8-13-8s-13 4-13 8z" fill="#2b211a"></path>
+          <circle cx="51.4" cy="47.5" r="1.25" fill="#2b211a"></circle>
+          <circle cx="60.6" cy="47.5" r="1.25" fill="#2b211a"></circle>
+          <path d="M52.6 54.2q3.4 2.6 6.8 0" fill="none" stroke="#a9603f" stroke-width="1.5" stroke-linecap="round"></path>
+          <path d="M31 90c-6-13-9-27-7-38l9-2c-1 11 1 22 6 32z" fill="#ffffff"></path>
+          <path d="M24 52c-2-8 1-15 6-16s10 4 10 10c0 5-3 8-8 8s-7-1-8-2z" fill="#e3a97f"></path>
+          <path d="M26.5 41.5l.8 6M30.5 40l.8 6M34.5 41l.8 5.5" fill="none" stroke="#c98a62" stroke-width="1.1" stroke-linecap="round"></path>
+        </g>
+      </svg>
+    </button>
+
+    <button class="fab-scan" type="button">
+      <img class="qr" src="scan to pay.jpeg" alt="">
+      <svg class="qr-drawing" viewBox="0 0 50 50" fill="none" aria-hidden="true">
+        <path d="M15 6H7v8" stroke="#39b54a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M35 6h8v8" stroke="#39b54a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M15 44H7v-8" stroke="#39b54a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M35 44h8v-8" stroke="#39b54a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M19.5 6h4" stroke="#e8443c" stroke-width="4.5" stroke-linecap="round"></path>
+        <path d="M26.5 44h4" stroke="#e8443c" stroke-width="4.5" stroke-linecap="round"></path>
+        <rect x="21" y="21" width="5.5" height="5.5" rx="1.6" fill="#39b54a"></rect>
+        <rect x="28.5" y="28.5" width="5.5" height="5.5" rx="1.6" fill="#39b54a"></rect>
+      </svg>
+      <span class="txt">Scan to pay</span>
+    </button>
+  </div>
+
 <script>
+  /* ---------- ADMIN OVERRIDES (saved from admin.html) ---------- */
+  const ADMIN_KEY = 'mpesa_admin_v1';
+
+  function applyAdminValues() {
+    let saved = null;
+    try {
+      saved = JSON.parse(localStorage.getItem(ADMIN_KEY));
+    } catch (err) {
+      return;
+    }
+    if (!saved) return;
+    ['balance', 'balance2'].forEach((id) => {
+      const el = document.getElementById(id);
+      const val = saved[id];
+      if (el && typeof val === 'string' && val.trim()) el.textContent = val.trim();
+    });
+  }
+
+  function applyAssistantImage() {
+    const btn = document.querySelector('.fab-assist');
+    if (!btn) return;
+    let url = '';
+    try {
+      const saved = JSON.parse(localStorage.getItem(ADMIN_KEY));
+      if (saved && typeof saved.assistant === 'string') url = saved.assistant.trim();
+    } catch (err) {
+      url = '';
+    }
+    const img = btn.querySelector('.fab-face');
+    const drawing = btn.querySelector('.fab-drawing');
+    img.src = url || 'zuri.jpeg';
+    img.style.display = 'block';
+    drawing.style.display = 'none';
+  }
+
+  /* if a bundled image is missing, fall back to the inline drawing */
+  function fabImageFallback() {
+    const face = document.querySelector('.fab-assist .fab-face');
+    if (face && (!face.complete || face.naturalWidth === 0)) {
+      face.style.display = 'none';
+      document.querySelector('.fab-assist .fab-drawing').style.display = 'block';
+    }
+    const qr = document.querySelector('.fab-scan .qr');
+    if (qr && (!qr.complete || qr.naturalWidth === 0)) {
+      qr.style.display = 'none';
+      document.querySelector('.fab-scan .qr-drawing').style.display = 'block';
+    }
+  }
+
+  applyAdminValues();
+  window.addEventListener('load', () => {
+    applyAssistantImage();
+    fabImageFallback();
+  });
+  window.addEventListener('storage', (e) => {
+    if (e.key === ADMIN_KEY) {
+      applyAdminValues();
+      applyAssistantImage();
+      renderCarousel();
+    }
+  });
+
+  /* ---------- TIME-BASED GREETING ---------- */
+  const GREETINGS = [
+    [0, 12, 'Good morning'],
+    [12, 15, 'Good afternoon'],
+    [15, 24, 'Good evening'],
+  ];
+
+  function setGreeting() {
+    const h = new Date().getHours();
+    const hit = GREETINGS.find(([from, to]) => h >= from && h < to);
+    document.getElementById('greeting').textContent = hit ? hit[2] : 'Good evening';
+  }
+
+  setGreeting();
+  setInterval(setGreeting, 60000);
+
   const balance = document.getElementById('balance');
   const eyeIcon = document.getElementById('eyeIcon');
 
@@ -754,40 +1009,70 @@
   });
 
   /* ---------- IMAGE CAROUSEL (rotates every 5s) ---------- */
-  /* put your image paths here, in the same order as the cards above */
-  const SLIDES = [
+  /* fallback sources, used when the admin has not saved any URLs for a card */
+  const DEFAULT_SLIDES = [
     ['images/deal-1.jpg', 'images/deal-2.jpg', 'images/deal-3.jpg'],
     ['images/flash-1.jpg', 'images/flash-2.jpg'],
     ['images/offer-1.jpg', 'images/offer-2.jpg', 'images/offer-3.jpg'],
   ];
 
   const ROTATE_MS = 5000;
-  const shots = Array.from(document.querySelectorAll('.shot'));
-  const frames = shots.map((shot, i) => {
-    const sources = SLIDES[i] || [];
-    const imgs = sources.map((src) => {
-      const img = new Image();
-      img.src = src;
-      img.alt = '';
-      img.addEventListener('error', () => img.remove());
-      img.addEventListener('load', () => {
-        const ph = shot.querySelector('.ph');
-        if (ph) ph.remove();
-      });
-      shot.appendChild(img);
-      return img;
-    });
-    return { imgs, at: 0 };
-  });
+  let rotateTimer = null;
 
-  setInterval(() => {
-    frames.forEach((frame) => {
-      if (frame.imgs.length < 1) return;
-      frame.imgs.forEach((img) => img.classList.remove('on'));
-      frame.at = (frame.at + 1) % frame.imgs.length;
-      frame.imgs[frame.at].classList.add('on');
+  function slideSources() {
+    let saved = null;
+    try {
+      saved = JSON.parse(localStorage.getItem(ADMIN_KEY));
+    } catch (err) {
+      saved = null;
+    }
+    const admin = saved && Array.isArray(saved.carousel) ? saved.carousel : [];
+    return DEFAULT_SLIDES.map((fallback, i) => {
+      if (!Array.isArray(admin[i])) return fallback;
+      return admin[i].map((u) => (typeof u === 'string' ? u.trim() : '')).filter(Boolean);
     });
-  }, ROTATE_MS);
+  }
+
+  function renderCarousel() {
+    if (rotateTimer) clearInterval(rotateTimer);
+    const sources = slideSources();
+    const shots = Array.from(document.querySelectorAll('.shot'));
+    const frames = shots.map(() => ({ imgs: [], at: 0 }));
+
+    shots.forEach((shot, i) => {
+      shot.innerHTML = '<span class="ph">image 1</span>';
+      (sources[i] || []).forEach((src) => {
+        const img = new Image();
+        img.src = src;
+        img.alt = '';
+        img.addEventListener('load', () => {
+          const ph = shot.querySelector('.ph');
+          if (ph) ph.remove();
+          if (!frames[i].imgs.some((n) => n.classList.contains('on'))) img.classList.add('on');
+        });
+        img.addEventListener('error', () => {
+          img.remove();
+          frames[i].imgs = frames[i].imgs.filter((n) => n !== img);
+          const ph = shot.querySelector('.ph');
+          if (ph) ph.textContent = 'image failed to load';
+        });
+        frames[i].imgs.push(img);
+        shot.appendChild(img);
+      });
+      if (frames[i].imgs.length) frames[i].imgs[0].classList.add('on');
+    });
+
+    rotateTimer = setInterval(() => {
+      frames.forEach((frame) => {
+        if (frame.imgs.length < 1) return;
+        frame.imgs.forEach((img) => img.classList.remove('on'));
+        frame.at = (frame.at + 1) % frame.imgs.length;
+        frame.imgs[frame.at].classList.add('on');
+      });
+    }, ROTATE_MS);
+  }
+
+  renderCarousel();
 </script>
 
 </body>

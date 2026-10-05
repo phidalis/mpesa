@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>M-SEPA Admin</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    height: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: #0a0a0a;
+    color: #fff;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: clamp(14px, 4vw, 32px);
+    padding-top: max(clamp(14px, 4vw, 32px), env(safe-area-inset-top));
+    padding-bottom: max(clamp(14px, 4vw, 32px), env(safe-area-inset-bottom));
+    display: flex;
+    justify-content: center;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 3vw, 18px);
+  }
+
+  .head h1 {
+    font-size: clamp(1.05rem, 5vw, 1.35rem);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .head p {
+    margin-top: 4px;
+    font-size: clamp(0.72rem, 3.4vw, 0.82rem);
+    color: #9ca3af;
+  }
+
+  .card {
+    background: #141414;
+    border: 1px solid #1f1f1f;
+    border-radius: 12px;
+    padding: clamp(14px, 3.6vw, 20px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 3vw, 16px);
+  }
+
+  .card-title {
+    font-size: clamp(0.8rem, 3.6vw, 0.9rem);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: #22c55e;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .lbl {
+    font-size: clamp(0.74rem, 3.4vw, 0.84rem);
+    font-weight: 600;
+    color: #e5e7eb;
+  }
+
+  .hint {
+    font-size: clamp(0.66rem, 3vw, 0.74rem);
+    color: #6b7280;
+  }
+
+  input {
+    font-family: inherit;
+    font-size: clamp(0.9rem, 4.2vw, 1rem);
+    font-weight: 600;
+    color: #fff;
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 9px;
+    padding: clamp(11px, 3vw, 14px) clamp(12px, 3.2vw, 15px);
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  input:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+  }
+
+  .row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: inherit;
+    font-size: clamp(0.82rem, 3.8vw, 0.92rem);
+    font-weight: 700;
+    border: none;
+    border-radius: 9px;
+    padding: clamp(12px, 3.2vw, 15px) clamp(16px, 4vw, 22px);
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.08s ease;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  .btn.primary {
+    background: #22c55e;
+    color: #06240f;
+    flex: 1 1 auto;
+  }
+
+  .btn.ghost {
+    background: transparent;
+    color: #ef4444;
+    border: 1px solid #3a1d1d;
+  }
+
+  .status {
+    min-height: 1.2em;
+    font-size: clamp(0.7rem, 3.2vw, 0.78rem);
+    font-weight: 600;
+    color: #22c55e;
+  }
+
+  .status.err {
+    color: #ff5c5c;
+  }
+
+  .note {
+    font-size: clamp(0.7rem, 3.2vw, 0.78rem);
+    line-height: 1.5;
+    color: #9ca3af;
+  }
+
+  .note b {
+    color: #fff;
+  }
+
+  .warn {
+    color: #fbbf24;
+  }
+
+  .current {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: clamp(0.72rem, 3.2vw, 0.8rem);
+    padding: 9px 11px;
+    background: #0a0a0a;
+    border: 1px solid #1f1f1f;
+    border-radius: 8px;
+  }
+
+  .current span:first-child {
+    color: #9ca3af;
+  }
+
+  .current span:last-child {
+    font-weight: 700;
+    color: #fff;
+  }
+
+  textarea {
+    font-family: inherit;
+    font-size: clamp(0.72rem, 3.3vw, 0.8rem);
+    line-height: 1.5;
+    color: #fff;
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 9px;
+    padding: clamp(10px, 2.8vw, 13px) clamp(12px, 3.2vw, 15px);
+    width: 100%;
+    min-height: clamp(64px, 18vw, 78px);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  textarea:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+  }
+
+  .slide {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .slide + .slide {
+    padding-top: clamp(10px, 2.8vw, 14px);
+    border-top: 1px solid #1f1f1f;
+  }
+
+  .count {
+    font-size: clamp(0.64rem, 2.9vw, 0.72rem);
+    color: #6b7280;
+  }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(52px, 15vw, 64px), 1fr));
+    gap: 7px;
+  }
+
+  .tiles:empty {
+    display: none;
+  }
+
+  .tile {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: 7px;
+    overflow: hidden;
+    background: #1f1f1f;
+    border: 1px solid #262626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .tile.bad {
+    background: #3a1d1d;
+    border-color: #ef4444;
+  }
+
+  .tile.bad::after {
+    content: 'bad url';
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #ff5c5c;
+  }
+
+  .tile .x {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 17px;
+    height: 17px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.72);
+    color: #fff;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <div class="head">
+      <h1>Admin Portal</h1>
+      <p>Edit the values shown on the dashboard</p>
+    </div>
+
+    <section class="card">
+      <h2 class="card-title">Balances</h2>
+
+      <label class="field">
+        <span class="lbl">Main balance</span>
+        <input id="mainBalance" type="text" autocomplete="off" spellcheck="false" placeholder="Ksh 1,500.00">
+        <span class="hint">Free text, e.g. Ksh 12,400.50</span>
+      </label>
+
+      <label class="field">
+        <span class="lbl">Airtime card balance</span>
+        <input id="secondBalance" type="text" autocomplete="off" spellcheck="false" placeholder="Ksh. 0">
+        <span class="hint">Shown under &ldquo;Airtime&rdquo; on the second card</span>
+      </label>
+
+      <div class="row">
+        <button class="btn primary" id="save" type="button">Save changes</button>
+        <button class="btn ghost" id="reset" type="button">Reset</button>
+      </div>
+
+      <p class="status" id="status"></p>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">Carousel images</h2>
+      <p class="hint">
+        One image URL per line, in rotation order. Cloudinary links work as-is &mdash; paste the full
+        <b>https://res.cloudinary.com/&hellip;</b> address. Leave a card empty to keep the placeholder.
+      </p>
+
+      <div class="slide">
+        <label class="lbl">Card 1</label>
+        <textarea class="url-area" rows="3" spellcheck="false" autocomplete="off" placeholder="https://res.cloudinary.com/.../deal-1.jpg"></textarea>
+        <span class="count"></span>
+        <div class="tiles"></div>
+      </div>
+
+      <div class="slide">
+        <label class="lbl">Card 2</label>
+        <textarea class="url-area" rows="3" spellcheck="false" autocomplete="off" placeholder="https://res.cloudinary.com/.../flash-1.jpg"></textarea>
+        <span class="count"></span>
+        <div class="tiles"></div>
+      </div>
+
+      <div class="slide">
+        <label class="lbl">Card 3</label>
+        <textarea class="url-area" rows="3" spellcheck="false" autocomplete="off" placeholder="https://res.cloudinary.com/.../offer-1.jpg"></textarea>
+        <span class="count"></span>
+        <div class="tiles"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">Assistant avatar</h2>
+      <label class="field">
+        <span class="lbl">Image URL (optional)</span>
+        <input id="assistantUrl" type="text" autocomplete="off" spellcheck="false" placeholder="https://res.cloudinary.com/.../assistant.png">
+        <span class="hint">Leave empty to use the bundled <b>zuri.jpeg</b>. A square image works best.</span>
+      </label>
+      <div class="tiles" id="assistPreview"></div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">Currently saved</h2>
+      <div class="current">
+        <span>Main balance</span>
+        <span id="showMain">&mdash;</span>
+      </div>
+      <div class="current">
+        <span>Airtime card</span>
+        <span id="showSecond">&mdash;</span>
+      </div>
+      <p class="note">
+        Values are stored in <b>this browser only</b> (localStorage). They appear on
+        <b>dashboard.html</b> in the same browser, and nowhere else &mdash; your phone will still show the
+        built-in defaults. A server is needed for changes to reach other devices.
+      </p>
+      <p class="note warn" id="storageWarn" hidden>
+        This browser is blocking local storage, so saving will not work.
+      </p>
+    </section>
+  </div>
+
+<script>
+  const KEY = 'mpesa_admin_v1';
+  const DEFAULTS = { balance: 'Ksh 1,500.00', balance2: 'Ksh. 0' };
+
+  const mainInput = document.getElementById('mainBalance');
+  const secondInput = document.getElementById('secondBalance');
+  const showMain = document.getElementById('showMain');
+  const showSecond = document.getElementById('showSecond');
+  const statusEl = document.getElementById('status');
+  const areas = Array.from(document.querySelectorAll('.url-area'));
+  const tiles = Array.from(document.querySelectorAll('.tiles'));
+  const counts = Array.from(document.querySelectorAll('.count'));
+  const assistantInput = document.getElementById('assistantUrl');
+  const assistPreview = document.getElementById('assistPreview');
+
+  function renderAssistant() {
+    const url = assistantInput.value.trim();
+    assistPreview.innerHTML = '';
+    if (!url) return;
+
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = '';
+    img.addEventListener('error', () => {
+      img.remove();
+      tile.classList.add('bad');
+    });
+
+    const x = document.createElement('button');
+    x.type = 'button';
+    x.className = 'x';
+    x.textContent = '\u00d7';
+    x.setAttribute('aria-label', 'Clear assistant image');
+    x.addEventListener('click', () => {
+      assistantInput.value = '';
+      renderAssistant();
+    });
+
+    tile.appendChild(img);
+    tile.appendChild(x);
+    assistPreview.appendChild(tile);
+  }
+
+  function parseUrls(area) {
+    return area.value.split('\n').map((line) => line.trim()).filter(Boolean);
+  }
+
+  function renderTiles(i) {
+    const urls = parseUrls(areas[i]);
+    counts[i].textContent = urls.length
+      ? urls.length + (urls.length > 1 ? ' images' : ' image')
+      : 'empty \u2014 placeholder stays';
+    tiles[i].innerHTML = '';
+
+    urls.forEach((url, idx) => {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = '';
+      img.addEventListener('error', () => {
+        img.remove();
+        tile.classList.add('bad');
+      });
+
+      const x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'x';
+      x.textContent = '\u00d7';
+      x.setAttribute('aria-label', 'Remove image ' + (idx + 1));
+      x.addEventListener('click', () => {
+        const lines = areas[i].value.split('\n');
+        lines.splice(idx, 1);
+        areas[i].value = lines.join('\n');
+        renderTiles(i);
+      });
+
+      tile.appendChild(img);
+      tile.appendChild(x);
+      tiles[i].appendChild(tile);
+    });
+  }
+
+  function readStore() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return {};
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (err) {
+      return {};
+    }
+  }
+
+  function storageWorks() {
+    try {
+      localStorage.setItem(KEY + '_test', '1');
+      localStorage.removeItem(KEY + '_test');
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function fillInputs() {
+    const saved = readStore();
+    mainInput.value = saved.balance || DEFAULTS.balance;
+    secondInput.value = saved.balance2 || DEFAULTS.balance2;
+    showMain.textContent = saved.balance || DEFAULTS.balance;
+    showSecond.textContent = saved.balance2 || DEFAULTS.balance2;
+    areas.forEach((area, i) => {
+      const list = Array.isArray(saved.carousel) && Array.isArray(saved.carousel[i]) ? saved.carousel[i] : [];
+      area.value = list.join('\n');
+      renderTiles(i);
+    });
+    assistantInput.value = typeof saved.assistant === 'string' ? saved.assistant : '';
+    renderAssistant();
+  }
+
+  function flash(message, isError) {
+    statusEl.textContent = message;
+    statusEl.classList.toggle('err', Boolean(isError));
+    clearTimeout(flash.timer);
+    flash.timer = setTimeout(() => {
+      statusEl.textContent = '';
+    }, 3200);
+  }
+
+  function save() {
+    if (!storageWorks()) {
+      flash('Could not save: this browser blocks local storage.', true);
+      return;
+    }
+    const payload = {
+      balance: mainInput.value.trim() || DEFAULTS.balance,
+      balance2: secondInput.value.trim() || DEFAULTS.balance2,
+      carousel: areas.map(parseUrls),
+      assistant: assistantInput.value.trim(),
+    };
+    try {
+      localStorage.setItem(KEY, JSON.stringify(payload));
+    } catch (err) {
+      flash('Could not save: storage is full or blocked.', true);
+      return;
+    }
+    showMain.textContent = payload.balance;
+    showSecond.textContent = payload.balance2;
+    flash('Saved. Open dashboard.html in this browser.');
+  }
+
+  function reset() {
+    try {
+      localStorage.removeItem(KEY);
+    } catch (err) {
+      /* ignore */
+    }
+    fillInputs();
+    showMain.textContent = 'defaults';
+    showSecond.textContent = 'defaults';
+    flash('Reset to the built-in defaults.');
+  }
+
+  document.getElementById('save').addEventListener('click', save);
+  document.getElementById('reset').addEventListener('click', reset);
+
+  [mainInput, secondInput].forEach((el) => {
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') save();
+    });
+  });
+
+  areas.forEach((area, i) => {
+    let t = null;
+    area.addEventListener('input', () => {
+      clearTimeout(t);
+      t = setTimeout(() => renderTiles(i), 350);
+    });
+    area.addEventListener('blur', () => renderTiles(i));
+    area.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) save();
+    });
+  });
+
+  window.addEventListener('storage', fillInputs);
+
+  let assistTimer = null;
+  assistantInput.addEventListener('input', () => {
+    clearTimeout(assistTimer);
+    assistTimer = setTimeout(renderAssistant, 350);
+  });
+  assistantInput.addEventListener('blur', renderAssistant);
+
+  document.getElementById('storageWarn').hidden = storageWorks();
+  fillInputs();
+</script>
+</body>
+</html>
