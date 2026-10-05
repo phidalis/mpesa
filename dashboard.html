@@ -933,6 +933,17 @@
   /* ---------- ADMIN OVERRIDES (saved from admin.html) ---------- */
   const ADMIN_KEY = 'mpesa_admin_v1';
 
+  /* inserts thousands separators into the number inside a balance string, keeping any
+     currency prefix and decimals as typed: 'Ksh 12345' -> 'Ksh 12,345' */
+  function formatThousands(str) {
+    return String(str).replace(/(\d[\d,]*)/, (num) => {
+      const clean = num.replace(/,/g, '');
+      const [whole, ...rest] = clean.split('.');
+      const grouped = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return grouped + (rest.length ? '.' + rest.join('.') : '');
+    });
+  }
+
   function applyAdminValues() {
     let saved = null;
     try {
@@ -944,7 +955,7 @@
     ['balance', 'balance2'].forEach((id) => {
       const el = document.getElementById(id);
       const val = saved[id];
-      if (el && typeof val === 'string' && val.trim()) el.textContent = val.trim();
+      if (el && typeof val === 'string' && val.trim()) el.textContent = formatThousands(val.trim());
     });
   }
 
