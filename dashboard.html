@@ -409,6 +409,26 @@
     flex: 0 0 auto;
   }
 
+  /* Send Money uses a supplied jpeg whose artwork runs to the frame corners, so it is
+     inset (not cropped) and screen-blended to drop its black backdrop into the circle */
+  .qa .qa-photo {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    display: block;
+    flex: 0 0 auto;
+    mix-blend-mode: screen;
+  }
+
+  /* Pochi Wallet's art fills only 77% of its frame, so it is scaled up to match the
+     visual weight of the svg icons. Its backdrop is #0e0e10 rather than black, so it
+     needs lighten (not screen) to land exactly on the #2b2b2b circle with no square. */
+  .qa .qa-photo-pochi {
+    width: 86%;
+    height: 86%;
+    mix-blend-mode: lighten;
+  }
+
   .qa span {
     font-size: clamp(0.68rem, 3.4vw, 0.88rem);
     font-weight: 600;
@@ -719,14 +739,7 @@
       <div class="qa-grid">
         <div class="qa">
           <div class="icon-circle">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <g transform="translate(12 12) scale(0.74) translate(-12 -12)">
-                <path d="M3.4 10.4 19.49 3.85Q20.6 3.4 20.18 4.52L14.2 20.6 10.6 14.2Z" fill="none"
-                      stroke="#22c55e" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"></path>
-                <path d="M10.6 14.2 19.8 4.26" fill="none" stroke="#ef4444" stroke-width="1.5"
-                      stroke-linecap="round"></path>
-              </g>
-            </svg>
+            <img class="qa-photo" src="send money.jpeg" alt="">
           </div>
           <span>Send<br>Money</span>
         </div>
@@ -760,13 +773,7 @@
 
         <div class="qa">
           <div class="icon-circle">
-            <svg viewBox="0 0 48 48" aria-hidden="true">
-              <circle cx="24" cy="24" r="13" fill="#39B54A"></circle>
-              <path d="M16.6 21.8q7.4-5.6 14.8 0" fill="none" stroke="#ffffff" stroke-width="3"
-                    stroke-linecap="round"></path>
-              <path d="M13.6 28.4q10.4-7.6 20.8 0" fill="none" stroke="#F04B50" stroke-width="3.4"
-                    stroke-linecap="round"></path>
-            </svg>
+            <img class="qa-photo qa-photo-pochi" src="pochi wallet.jpeg" alt="">
           </div>
           <span>Pochi<br>Wallet</span>
         </div>
