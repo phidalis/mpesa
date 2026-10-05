@@ -297,6 +297,31 @@
     display: block;
   }
 
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: max(20px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    z-index: 2147483646;
+    display: none;
+    white-space: nowrap;
+    max-width: calc(100% - 24px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: clamp(0.58rem, 2.8vw, 0.7rem);
+    line-height: 1.3;
+    letter-spacing: 0.2px;
+    color: #ff5c5c;
+    background: #12211a;
+    border-radius: 6px;
+    padding: 8px 12px;
+  }
+
+  .toast.show {
+    display: block;
+    animation: noticeIn 0.2s ease;
+  }
+
   @media print {
     body > *:not(.shield) {
       visibility: hidden !important;
@@ -364,6 +389,7 @@
   </div>
 
   <div class="shield" id="shield" aria-hidden="true"></div>
+  <div class="toast" id="toast" role="alert">Screenshots and screen recording are disabled</div>
 
 <script>
   const boxes = document.querySelectorAll('.pin-box');
@@ -456,52 +482,109 @@
     }
   });
 
-  const shield = document.getElementById('shield');
-  const IDLE_HIDE_MS = 8000;
-  let idleTimer = null;
-  let sharing = false;
+  const CONFIG = {
+    idleHideMs: 0,
+    concealOnBlur: true,
+    blurOnlyOnFinePointer: true
+  };
 
-  function conceal() {
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const toastEl = document.getElementById('toast');
+  const SCREENSHOT_KEYS = new Set(['PrintScreen', 'Print']);
+  let idleTimer = null;
+  let toastTimer = null;
+  let sharing = false;
+  let blurAt = 0;
+  let concealReason = '';
+
+  function conceal(reason) {
+    concealReason = reason || 'manual';
     document.body.classList.add('protected');
   }
 
   function reveal() {
-    if (sharing) return;
-    document.body.classList.remove('protected');
+    concealReason = '';
+    if (!sharing) document.body.classList.remove('protected');
   }
 
-  function armIdleTimer() {
+  function warnCapture() {
+    if (toastTimer) clearTimeout(toastTimer);
+    toastEl.classList.add('show');
+    toastTimer = setTimeout(() => {
+      toastEl.classList.remove('show');
+      toastTimer = null;
+    }, 2600);
+  }
+
+  function activity() {
+    reveal();
     if (idleTimer) clearTimeout(idleTimer);
-    idleTimer = setTimeout(conceal, IDLE_HIDE_MS);
+    if (CONFIG.idleHideMs > 0) {
+      idleTimer = setTimeout(() => conceal('idle'), CONFIG.idleHideMs);
+    }
   }
 
   ['pointermove', 'pointerdown', 'touchstart', 'keydown', 'wheel'].forEach((ev) => {
-    window.addEventListener(ev, armIdleTimer, { passive: true });
+    window.addEventListener(ev, activity, { passive: true });
   });
 
-  window.addEventListener('focus', () => { reveal(); armIdleTimer(); });
-  window.addEventListener('blur', conceal);
-  window.addEventListener('pagehide', conceal);
-  window.addEventListener('beforeprint', conceal);
-  window.addEventListener('afterprint', () => { reveal(); armIdleTimer(); });
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) conceal();
-    else { reveal(); armIdleTimer(); }
+  window.addEventListener('focus', () => {
+    const away = Date.now() - blurAt;
+    if (blurAt && away > 0 && away < 2500) warnCapture();
+    blurAt = 0;
+    activity();
   });
+  window.addEventListener('focusin', activity);
+  window.addEventListener('blur', () => {
+    blurAt = Date.now();
+    if (!CONFIG.concealOnBlur) return;
+    if (CONFIG.blurOnlyOnFinePointer && !finePointer) return;
+    conceal('blur');
+  });
+  window.addEventListener('pagehide', () => conceal('hidden'));
+  window.addEventListener('beforeprint', () => conceal('print'));
+  window.addEventListener('afterprint', activity);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) conceal('hidden');
+    else activity();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (!e.repeat && isCaptureShortcut(e)) {
+      conceal('blur');
+      warnCapture();
+    }
+  }, true);
+
+  function isCaptureShortcut(e) {
+    if (SCREENSHOT_KEYS.has(e.key)) return true;
+    const mod = e.ctrlKey || e.metaKey;
+    if (!mod || !e.shiftKey) return false;
+    return e.key === 's' || e.key === 'S' || e.key === '3' || e.key === '4' || e.key === '5';
+  }
+
+  setInterval(() => {
+    const sticky = concealReason === 'idle' || sharing || concealReason === 'print';
+    if (!concealReason || sticky) return;
+    if (document.visibilityState === 'visible' && document.hasFocus()) {
+      concealReason = '';
+      document.body.classList.remove('protected');
+    }
+  }, 1000);
 
   const media = navigator.mediaDevices;
   if (media && typeof media.getDisplayMedia === 'function') {
     const nativeGetDisplayMedia = media.getDisplayMedia.bind(media);
     media.getDisplayMedia = function () {
       const args = arguments;
-      conceal();
+      conceal('share');
       return nativeGetDisplayMedia.apply(media, args).then((stream) => {
         sharing = true;
-        conceal();
+        conceal('share');
         const release = () => {
           sharing = false;
           reveal();
-          armIdleTimer();
+          activity();
         };
         stream.getTracks().forEach((track) => {
           track.addEventListener('ended', release);
@@ -511,7 +594,7 @@
       }, (err) => {
         sharing = false;
         reveal();
-        armIdleTimer();
+        activity();
         throw err;
       });
     };
@@ -521,8 +604,7 @@
     if (e.target.closest('.card')) e.preventDefault();
   });
 
-  reveal();
-  armIdleTimer();
+  activity();
 </script>
 </body>
 </html>
